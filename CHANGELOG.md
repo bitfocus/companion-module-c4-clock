@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 - First official release
+
+- Start the official Bitfocus release series at 1.0.0, carrying forward all
+  functionality and fixes from the development builds below.
+- Include timer and run-sheet controls, four PowerPoint sources, output controls,
+  live status presets, C4 warning colours and the corrected slides-left counter.
+- Retain existing action, feedback and variable IDs and the private legacy module
+  ID. The earlier version numbers were development builds, not store releases.
+
+## Development History (Not Official Store Releases)
+
 ## 1.0.68 - Slides-left mode correction
 
 - Use the full deck's slides-left count unless C4 Single Deck mode is enabled.

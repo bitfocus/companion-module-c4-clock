@@ -1,6 +1,6 @@
 {
 	"name": "companion-module-c4-clock",
-	"version": "1.0.68",
+	"version": "1.0.0",
 	"main": "dist/main.js",
 	"type": "module",
 	"scripts": {

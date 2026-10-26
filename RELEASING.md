@@ -19,7 +19,7 @@ Repository creation/approval does not itself publish a module in the store.
 ## Submit a version
 
 1. Push the reviewed source to the approved Bitfocus repository and let CI pass.
-2. Create and push a version tag matching the package version, e.g. `v1.0.68`.
+2. Create and push a version tag matching the package version, e.g. `v1.0.0`.
    A GitHub release triggers the retained release-package workflow, but does not
    replace submission through the Developer Portal.
 3. In the [Bitfocus Developer Portal](https://developer.bitfocus.io/), open
@@ -28,6 +28,10 @@ Repository creation/approval does not itself publish a module in the store.
 4. Wait for review. Address requested changes in a new commit/version as needed.
    Only claim store availability after the version has been approved.
 
-The previous private series reached 1.0.65; the current proposed official
-version is 1.0.68, following local test packages 1.0.66 and 1.0.67. The old module ID is retained in `legacyIds`; action,
-feedback and variable IDs must remain stable unless an upgrade script is added.
+The official release series starts at 1.0.0. Earlier 1.0.65-1.0.68 versions were
+private/development builds, not official store releases. The existing v1.0.68
+Git tag remains as development history; submit v1.0.0 for the first official
+release. Development installations using a higher version number may need to
+select/import 1.0.0 explicitly rather than relying on an automatic update.
+The old module ID is retained in `legacyIds`; action, feedback and variable IDs
+must remain stable unless an upgrade script is added.
