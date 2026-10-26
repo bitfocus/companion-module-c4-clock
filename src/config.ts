@@ -10,18 +10,19 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 		{
 			type: 'textinput',
 			id: 'host',
-			label: 'Target IP',
+			label: 'C4 Clock App IP',
 			width: 8,
-			regex: Regex.IP,
+			default: '127.0.0.1',
+			regex: Regex.HOSTNAME,
 		},
 		{
 			type: 'number',
 			id: 'port',
-			label: 'Target Port',
+			label: 'Web Control Port',
 			width: 4,
 			min: 1,
 			max: 65535,
-			default: 8000,
+			default: 8080,
 		},
 	]
 }
