@@ -7,10 +7,16 @@ PowerPoint connection from Companion is needed.
 
 1. On the Clock PC, open C4 Clock Settings and enable Web Display and Web Control.
    Web Control requires the relevant C4 Pro permission/entitlement.
-2. Note the Clock PC's reachable IP address and web port, normally `8080`.
+2. Note the Clock PC's reachable IP address and web port. New C4 setups use
+   `44044`; existing installations retain their saved port, which may be `8080`.
 3. Add a **C4 Clock** connection in Companion and enter that IP and port.
    Use `127.0.0.1` only when Companion and C4 Clock run on the same PC.
 4. Open Presets and drag the supplied controls onto a Companion page.
+
+The **Web Control Port** in Companion must match **C4 Settings > Web Display >
+Web port**. If you change C4's port, update the existing Companion connection too
+and reopen browser links or scan the updated QR codes. PowerPoint add-in ports
+are separate and do not change. Module upgrades preserve saved connection ports.
 
 Use Companion 5.0 or newer with module API 2.1. C4 Clock 5.77.183 is the release
 baseline. Older builds may not expose all status fields or the same safety locks.

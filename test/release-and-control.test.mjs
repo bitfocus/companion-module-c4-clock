@@ -8,6 +8,18 @@ import { UpdatePresets } from '../dist/presets.js'
 import { UpdateActions } from '../dist/actions.js'
 import { UpdateFeedbacks } from '../dist/feedbacks.js'
 import { OUTPUT_ICONS } from '../dist/output-icons.js'
+import { DEFAULT_WEB_PORT, GetConfigFields } from '../dist/config.js'
+
+test('web port default matches new C4 setups while preserving existing connections', () => {
+	assert.equal(DEFAULT_WEB_PORT, 44044)
+	assert.equal(GetConfigFields().find((field) => field.id === 'port').default, 44044)
+	const self = moduleFixture()
+	assert.equal(self.normalizedConfig({ host: 'localhost' }).port, 44044)
+	for (const port of [8080, 8044, 12080, 44044]) {
+		assert.equal(self.normalizedConfig({ host: 'localhost', port }).port, port)
+	}
+	assert.match(GetConfigFields().find((field) => field.id === 'web_port_help').value, /update|updating/)
+})
 
 function moduleFixture() {
 	const self = Object.create(ModuleInstance.prototype)

@@ -1,6 +1,6 @@
 import { InstanceBase, InstanceStatus, type SomeCompanionConfigField } from '@companion-module/base'
 import { request as httpRequest } from 'node:http'
-import { GetConfigFields, type ModuleConfig } from './config.js'
+import { DEFAULT_WEB_PORT, GetConfigFields, type ModuleConfig } from './config.js'
 import { UpdateVariableDefinitions, type VariablesSchema } from './variables.js'
 import { UpgradeScripts } from './upgrades.js'
 import { UpdateActions, type ActionsSchema } from './actions.js'
@@ -221,7 +221,7 @@ export default class ModuleInstance extends InstanceBase<ModuleSchema> {
 	}
 
 	private normalizedConfig(config: ModuleConfig): ModuleConfig {
-		return { host: (config.host || '127.0.0.1').trim(), port: Number(config.port) || 8080 }
+		return { host: (config.host || '127.0.0.1').trim(), port: Number(config.port) || DEFAULT_WEB_PORT }
 	}
 
 	private baseUrl(): string {
