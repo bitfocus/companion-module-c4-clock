@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.1 - Review Fixes And Expanded Presets
+
+- Match the API 2.1 template's Node 26 runtime, types and TypeScript settings.
+- Clear compiled output before building, and run CI tests in a separate job.
+- Respect Companion action cancellation without reporting a connection failure.
+- Refresh preset variable references after renaming the connection.
+- Preserve existing action, feedback and variable IDs.
+- Add native-shape radio battery/RF presets following C4's severity and RF scale,
+  with reported percent or bars, stale/offline handling and stable receiver IDs.
+- Show DEMO examples before receivers are configured. Assigned speaker names
+  replace mic labels; hold a mic button to show its label and release to restore.
+- Add LOAD PREV/NEXT wording, +/-5 minute presets, CLEAR MESSAGE and larger
+  abbreviated Current/Next presenter displays.
+- Match active greens, black Time Left frame, red armed state and improved
+  text contrast; show WAITING / CLICK TO / PLAY from C4's media state/banner.
+- Add optional Freeze last slide and AUTO LOAD PPT controls with confirmed-state
+  feedback and availability guards. These require the matching C4 HTTP support,
+  currently local test code; public .193 shows them unavailable. Other controls,
+  radio monitoring and demo previews remain usable without those new endpoints.
+- Consolidate local test builds 1.0.1-1.0.22 into this official 1.0.1 update.
+  Replace previously placed presets to adopt changed layouts or press/release actions.
+
 ## 1.0.0 - First official release
 
 - Start the official Bitfocus release series at 1.0.0, carrying forward all

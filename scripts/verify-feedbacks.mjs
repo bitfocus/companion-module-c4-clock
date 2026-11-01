@@ -105,6 +105,8 @@ const exportedPresetIds = [
 	'timer',
 	'ends_at',
 	'minute_minus',
+	'five_minutes_minus',
+	'five_minutes_plus',
 	'media_remaining',
 	'video_next',
 	'pace_eta',
@@ -236,6 +238,10 @@ assert.match(layeredText('session_delta'), /\$\(C4_Clock:session_delta\)/)
 assert.match(layeredText('media_remaining'), /\$\(C4_Clock:media_remaining\)/)
 assert.deepEqual(presets.minute_minus.steps[0].down[0], { actionId: 'jog', options: { seconds: -60 } })
 assert.deepEqual(presets.minute_plus.steps[0].down[0], { actionId: 'jog', options: { seconds: 60 } })
+assert.deepEqual(presets.five_minutes_minus.steps[0].down[0], { actionId: 'jog', options: { seconds: -300 } })
+assert.deepEqual(presets.five_minutes_plus.steps[0].down[0], { actionId: 'jog', options: { seconds: 300 } })
+assert.match(layeredText('five_minutes_minus'), /−5\nMIN/)
+assert.match(layeredText('five_minutes_plus'), /\+5\nMIN/)
 const expectedPresetActions = {
 	previous: 'presenter_previous',
 	minute_minus: 'jog',
@@ -275,8 +281,8 @@ for (const text of presets.ends_at.elements.filter(
 	)
 }
 for (const [id, label] of [
-	['previous', 'PREV'],
-	['next', 'NEXT'],
+	['previous', 'LOAD\nPREV'],
+	['next', 'LOAD\nNEXT'],
 ]) {
 	assert.equal(presets[id].elements.find((element) => element.type === 'text').text, label)
 	assert.equal(

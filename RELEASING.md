@@ -5,7 +5,7 @@ Repository creation/approval does not itself publish a module in the store.
 
 ## Before submission
 
-1. Use Node 22 and the Yarn version pinned in `package.json`.
+1. Use Node 26 and the Yarn version pinned in `package.json`.
 2. Run `yarn install --immutable`, `yarn verify` and `yarn package`.
 3. Import the package into a test Companion instance. Check actions, layered
    presets, custom connection labels, source selection, offline recovery and
@@ -19,7 +19,7 @@ Repository creation/approval does not itself publish a module in the store.
 ## Submit a version
 
 1. Push the reviewed source to the approved Bitfocus repository and let CI pass.
-2. Create and push a version tag matching the package version, e.g. `v1.0.0`.
+2. Create and push a version tag matching the package version, e.g. `v1.0.1`.
    A GitHub release triggers the retained release-package workflow, but does not
    replace submission through the Developer Portal.
 3. In the [Bitfocus Developer Portal](https://developer.bitfocus.io/), open
@@ -30,8 +30,10 @@ Repository creation/approval does not itself publish a module in the store.
 
 The official release series starts at 1.0.0. Earlier 1.0.65-1.0.68 versions were
 private/development builds, not official store releases. The existing v1.0.68
-Git tag remains as development history; submit v1.0.0 for the first official
-release. Development installations using a higher version number may need to
-select/import 1.0.0 explicitly rather than relying on an automatic update.
+Git tag remains as development history. The v1.0.0 submission received review
+feedback; v1.0.1 addresses it. Development installations using a higher version
+number may need to select/import 1.0.1 explicitly rather than relying on an automatic update.
+The local 1.0.2-1.0.22 packages were test iterations, not published store releases.
+Their final changes are consolidated into the official 1.0.1 update.
 The old module ID is retained in `legacyIds`; action, feedback and variable IDs
 must remain stable unless an upgrade script is added.

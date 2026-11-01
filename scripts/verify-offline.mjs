@@ -29,6 +29,12 @@ UpdateFeedbacks(self)
 UpdatePresets(self)
 assert.equal(self.feedbacks.c4_offline.callback(), true)
 for (const preset of Object.values(self.presets)) {
+	if (preset.name.startsWith('DEMO HH')) {
+		assert.deepEqual(preset.steps, [])
+		assert.deepEqual(preset.feedbacks, [])
+		assert.doesNotMatch(JSON.stringify(preset), /\$\(/)
+		continue
+	}
 	assert.equal(preset.feedbacks.at(-1).feedbackId, 'c4_offline')
 	if (preset.type === 'simple') {
 		assert.equal(preset.feedbacks.at(-1).style.text, 'C4\nOFFLINE')

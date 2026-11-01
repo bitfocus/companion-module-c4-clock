@@ -1,6 +1,13 @@
 import type ModuleInstance from './main.js'
+import { radioVariables } from './radios.js'
 
-export type VariablesSchema = {
+export type VariablesSchema = Record<`radio_${string}`, string | number> & {
+	auto_load_state: string
+	current_presenter: string
+	next_presenter: string
+	current_presenter_display: string
+	next_presenter_display: string
+	freeze_state: string
 	connection: string
 	timer: string
 	timer_colour: number
@@ -43,6 +50,21 @@ export type VariablesSchema = {
 
 export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	self.setVariableDefinitions({
+		radio_status: { name: 'Radio preset setup and connection status' },
+		...Object.fromEntries(
+			[...(self.radios?.values() ?? [])].flatMap((radio) =>
+				Object.keys(radioVariables([radio])).map((id) => [
+					id,
+					{ name: `${radio.label}: ${id.slice(23).replaceAll('_', ' ')} (${radio.identity})` },
+				]),
+			),
+		),
+		auto_load_state: { name: 'Auto load PowerPoint: ON, OFF, PENDING or UNAVAILABLE' },
+		current_presenter: { name: 'Current presenter name' },
+		next_presenter: { name: 'Next presenter name' },
+		current_presenter_display: { name: 'Current presenter name (two lines)' },
+		next_presenter_display: { name: 'Next presenter name (two lines)' },
+		freeze_state: { name: 'Selected PowerPoint Freeze last slide: ON, OFF, PENDING or UNAVAILABLE' },
 		connection: { name: 'Connection status' },
 		timer: { name: 'Countdown time' },
 		timer_colour: { name: 'Live C4 timer colour (RGB number)' },

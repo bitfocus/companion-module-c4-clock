@@ -1,6 +1,9 @@
 import type ModuleInstance from './main.js'
+import { freezeLastSlideState, waitingForMediaClick } from './main.js'
 
 export type FeedbacksSchema = {
+	auto_load_state: { type: 'boolean'; options: { state: string } }
+	freeze_state: { type: 'boolean'; options: { source: number; state: string } }
 	c4_offline: { type: 'boolean'; options: Record<string, never> }
 	ends_overdue: { type: 'boolean'; options: Record<string, never> }
 	running: { type: 'boolean'; options: Record<string, never> }
@@ -17,7 +20,7 @@ export type FeedbacksSchema = {
 	media_next: { type: 'boolean'; options: Record<string, never> }
 }
 
-const GREEN = 0x4bb824
+const WHITE = 0xffffff
 const BRIGHT_GREEN = 0x40ff40
 const BLACK = 0x000000
 const RED = 0xe02020
@@ -25,6 +28,57 @@ const AMBER = 0xff9d00
 
 export function UpdateFeedbacks(self: ModuleInstance): void {
 	self.setFeedbackDefinitions({
+		auto_load_state: {
+			name: 'Auto load PowerPoint state',
+			type: 'boolean',
+			defaultStyle: { bgcolor: BRIGHT_GREEN, color: BLACK },
+			options: [
+				{
+					id: 'state',
+					type: 'dropdown',
+					label: 'State',
+					default: 'on',
+					choices: ['on', 'off', 'pending', 'unavailable'].map((id) => ({ id, label: id.toUpperCase() })),
+				},
+			],
+			callback: (event) => self.autoLoadStatus().toLowerCase() === event.options.state,
+		},
+		freeze_state: {
+			name: 'Freeze last slide state',
+			type: 'boolean',
+			defaultStyle: { bgcolor: BRIGHT_GREEN, color: BLACK },
+			options: [
+				{
+					id: 'source',
+					type: 'dropdown',
+					label: 'PowerPoint source',
+					default: 0,
+					choices: [
+						{ id: 0, label: 'Selected PowerPoint source' },
+						...[1, 2, 3, 4].map((id) => ({ id, label: `PPT ${id}` })),
+					],
+				},
+				{
+					id: 'state',
+					type: 'dropdown',
+					label: 'State',
+					default: 'on',
+					choices: ['on', 'off', 'pending', 'unavailable'].map((id) => ({ id, label: id.toUpperCase() })),
+				},
+			],
+			callback: (event) => {
+				const freeze = freezeLastSlideState(self.state, Number(event.options.source))
+				const state =
+					!self.connected || !freeze.available
+						? 'unavailable'
+						: freeze.pending
+							? 'pending'
+							: freeze.enabled
+								? 'on'
+								: 'off'
+				return state === event.options.state
+			},
+		},
 		ends_overdue: {
 			name: 'Ends at display shows OVER BY',
 			type: 'boolean',
@@ -126,7 +180,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 		arm_active: {
 			name: 'Arm / Auto Arm is active',
 			type: 'boolean',
-			defaultStyle: { bgcolor: GREEN, color: BLACK },
+			defaultStyle: { bgcolor: RED, color: WHITE },
 			options: [],
 			callback: () => self.state.autoStartArmed === true,
 		},
@@ -203,7 +257,7 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 			options: [],
 			callback: () => {
 				const kind = (self.state.nextSlideMediaKind || '').trim().toLowerCase()
-				return kind.includes('video') || kind.includes('audio') || kind === 'media'
+				return waitingForMediaClick(self.state) || kind.includes('video') || kind.includes('audio') || kind === 'media'
 			},
 		},
 	})

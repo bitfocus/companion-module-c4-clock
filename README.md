@@ -16,7 +16,7 @@ and [MIT licence](./LICENSE).
 
 ## Development
 
-Use Node.js 22.20 or newer within the Node 22 line, and Corepack/Yarn 4:
+Use Node.js 26 and Corepack/Yarn 4:
 
 ```sh
 corepack enable

@@ -3,6 +3,7 @@ import type { ModuleSchema } from './main.js'
 import type ModuleInstance from './main.js'
 import { LAYERED_PRESET_LAYOUTS, type LayeredPresetLayout } from './layered-presets.generated.js'
 import { OUTPUT_ICONS } from './output-icons.js'
+import { radioPreset, radioDemoPresets } from './radios.js'
 
 const GREEN = 0x4bb824
 const BRIGHT_GREEN = 0x40ff40
@@ -55,6 +56,12 @@ function slidesLeftValueStyle() {
 }
 
 export function UpdatePresets(self: ModuleInstance): void {
+	const radioGroup = {
+		id: 'radio_readings',
+		name: 'Radio mic batteries and RF',
+		type: 'simple' as const,
+		presets: [] as string[],
+	}
 	const structure: CompanionPresetSection[] = [
 		{
 			id: 'clock_control',
@@ -64,7 +71,20 @@ export function UpdatePresets(self: ModuleInstance): void {
 					id: 'transport',
 					name: 'Presenter and timer',
 					type: 'simple',
-					presets: ['previous', 'minute_minus', 'play_pause', 'minute_plus', 'next', 'reset'],
+					presets: [
+						'previous',
+						'five_minutes_minus',
+						'minute_minus',
+						'play_pause',
+						'minute_plus',
+						'five_minutes_plus',
+						'next',
+						'reset',
+						'auto_load_ppt',
+						'clear_message',
+						'current_presenter',
+						'next_presenter',
+					],
 				},
 				{
 					id: 'quick_presets',
@@ -82,7 +102,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					id: 'powerpoint',
 					name: 'PowerPoint and slides',
 					type: 'simple',
-					presets: ['ppt_1', 'ppt_2', 'ppt_3', 'ppt_4', 'slides_left', 'current_slide'],
+					presets: ['ppt_1', 'ppt_2', 'ppt_3', 'ppt_4', 'freeze_last_slide', 'slides_left', 'current_slide'],
 				},
 				{
 					id: 'timing',
@@ -91,15 +111,75 @@ export function UpdatePresets(self: ModuleInstance): void {
 					presets: ['timer', 'session_delta', 'ends_at', 'pace', 'pace_eta', 'flash_time', 'arm'],
 				},
 				{ id: 'media', name: 'Media', type: 'simple', presets: ['media_remaining', 'video_next'] },
+				radioGroup,
 			],
 		},
 	]
 
 	const presets: CompanionPresetDefinitions<ModuleSchema> = {
+		auto_load_ppt: {
+			type: 'simple',
+			name: 'Auto load PowerPoint',
+			style: { ...style('AUTO\nLOAD PPT', '14'), bgcolor: 0x303438 },
+			steps: [{ down: [{ actionId: 'auto_load_ppt', options: { mode: 'toggle' } }], up: [] }],
+			feedbacks: [
+				{ feedbackId: 'auto_load_state', options: { state: 'on' }, style: { bgcolor: BRIGHT_GREEN, color: BLACK } },
+				{ feedbackId: 'auto_load_state', options: { state: 'pending' }, style: { bgcolor: 0xff9d00, color: BLACK } },
+				{
+					feedbackId: 'auto_load_state',
+					options: { state: 'unavailable' },
+					style: { bgcolor: 0x303438, color: 0xaeb4b8 },
+				},
+			],
+		},
+		clear_message: {
+			type: 'simple',
+			name: 'Clear presenter message',
+			style: style('CLEAR\nMESSAGE', '14'),
+			steps: [{ down: [{ actionId: 'clear_message', options: {} }], up: [] }],
+			feedbacks: [],
+		},
+		current_presenter: {
+			type: 'simple',
+			name: 'Current presenter display',
+			style: style('CURRENT\n$(C4_Clock:current_presenter)', '14'),
+			steps: [],
+			feedbacks: [],
+		},
+		next_presenter: {
+			type: 'simple',
+			name: 'Next presenter display',
+			style: style('NEXT\n$(C4_Clock:next_presenter)', '14'),
+			steps: [],
+			feedbacks: [],
+		},
+		freeze_last_slide: {
+			type: 'simple',
+			name: 'Freeze last slide (selected PowerPoint)',
+			style: style('FREEZE\nLAST\nSLIDE', '14'),
+			steps: [{ down: [{ actionId: 'freeze_last_slide', options: { source: 0, mode: 'toggle' } }], up: [] }],
+			feedbacks: [
+				{
+					feedbackId: 'freeze_state',
+					options: { source: 0, state: 'on' },
+					style: { bgcolor: BRIGHT_GREEN, color: BLACK },
+				},
+				{
+					feedbackId: 'freeze_state',
+					options: { source: 0, state: 'pending' },
+					style: { bgcolor: 0xff9d00, color: BLACK },
+				},
+				{
+					feedbackId: 'freeze_state',
+					options: { source: 0, state: 'unavailable' },
+					style: { bgcolor: 0x303438, color: 0xaeb4b8 },
+				},
+			],
+		},
 		previous: {
 			type: 'simple',
-			name: 'Previous presenter',
-			style: style('PREV', '18'),
+			name: 'Load previous presenter',
+			style: style('LOAD\nPREV', '18'),
 			steps: [{ down: [{ actionId: 'presenter_previous', options: {} }], up: [] }],
 			feedbacks: [],
 		},
@@ -108,6 +188,20 @@ export function UpdatePresets(self: ModuleInstance): void {
 			name: 'Subtract one minute',
 			style: style('−1\nMIN', '18'),
 			steps: [{ down: [{ actionId: 'jog', options: { seconds: -60 } }], up: [] }],
+			feedbacks: [],
+		},
+		five_minutes_minus: {
+			type: 'simple',
+			name: 'Subtract five minutes',
+			style: style('−5\nMIN', '18'),
+			steps: [{ down: [{ actionId: 'jog', options: { seconds: -300 } }], up: [] }],
+			feedbacks: [],
+		},
+		five_minutes_plus: {
+			type: 'simple',
+			name: 'Add five minutes',
+			style: style('+5\nMIN', '18'),
+			steps: [{ down: [{ actionId: 'jog', options: { seconds: 300 } }], up: [] }],
 			feedbacks: [],
 		},
 		play_pause: {
@@ -132,8 +226,8 @@ export function UpdatePresets(self: ModuleInstance): void {
 		},
 		next: {
 			type: 'simple',
-			name: 'Next presenter',
-			style: style('NEXT', '18'),
+			name: 'Load next presenter',
+			style: style('LOAD\nNEXT', '18'),
 			steps: [{ down: [{ actionId: 'presenter_next', options: {} }], up: [] }],
 			feedbacks: [],
 		},
@@ -212,7 +306,13 @@ export function UpdatePresets(self: ModuleInstance): void {
 			name: 'Arm / Auto Arm',
 			style: style('$(C4_Clock:arm_label)\n$(C4_Clock:arm_state)', 24),
 			steps: [{ down: [{ actionId: 'arm', options: {} }], up: [] }],
-			feedbacks: [{ feedbackId: 'arm_active', options: {}, style: { bgcolor: GREEN, color: BLACK } }],
+			feedbacks: [
+				{
+					feedbackId: 'arm_active',
+					options: {},
+					style: { bgcolor: RED, color: WHITE, png64: OUTPUT_ICONS.buttonBorderBlack },
+				},
+			],
 		},
 		media_remaining: {
 			type: 'simple',
@@ -252,18 +352,117 @@ export function UpdatePresets(self: ModuleInstance): void {
 		}
 	}
 
-	for (const [id, layout] of Object.entries(LAYERED_PRESET_LAYOUTS)) {
+	const freezeLayout = structuredClone(LAYERED_PRESET_LAYOUTS.ppt_1)
+	freezeLayout.feedbacks = []
+	for (const element of freezeLayout.elements) {
+		if ('type' in element && element.type === 'box') element.color = 0x303438
+		if ('type' in element && element.type === 'image')
+			element.base64Image = `data:image/png;base64,${OUTPUT_ICONS.buttonBorderBlack}`
+		if ('type' in element && element.type === 'text')
+			Object.assign(element, {
+				text: 'FREEZE\nLAST\nSLIDE',
+				x: 6,
+				y: 8,
+				width: 88,
+				height: 84,
+				fontsize: 20,
+				fontsizeAllowShrink: true,
+				color: WHITE,
+				outlineColor: WHITE,
+			})
+	}
+	const layouts: Record<string, LayeredPresetLayout> = {
+		...LAYERED_PRESET_LAYOUTS,
+		arm: { ...LAYERED_PRESET_LAYOUTS.reset, feedbacks: [] },
+		freeze_last_slide: freezeLayout,
+		five_minutes_minus: LAYERED_PRESET_LAYOUTS.minute_minus,
+		five_minutes_plus: LAYERED_PRESET_LAYOUTS.minute_plus,
+		auto_load_ppt: freezeLayout,
+		clear_message: LAYERED_PRESET_LAYOUTS.reset,
+		current_presenter: { ...LAYERED_PRESET_LAYOUTS.ppt_1, feedbacks: [] },
+		next_presenter: { ...LAYERED_PRESET_LAYOUTS.ppt_1, feedbacks: [] },
+	}
+	const sessionLayout = structuredClone(layouts.session_delta)
+	const sessionAhead = sessionLayout.feedbacks.find(
+		(feedback) => feedback.feedbackId === 'session_state' && feedback.options.state === 'ahead',
+	)
+	if (sessionAhead) {
+		for (const property of ['color', 'outlineColor']) {
+			sessionAhead.styleOverrides.push({ elementId: 'text0', elementProperty: property, override: literal(0x000000) })
+		}
+	}
+	layouts.session_delta = sessionLayout
+	for (const [id, layout] of Object.entries(layouts)) {
 		const sourcePreset = presets[id]
 		if (!sourcePreset || sourcePreset.type !== 'simple') {
 			throw new Error(`Layered preset source is missing: ${id}`)
 		}
 
 		const elements = structuredClone(layout.elements)
+		if (id === 'video_next') {
+			const text = elements.find((element) => 'type' in element && element.type === 'text')
+			if (text) Object.assign(text, { fontsize: 20, fontsizeAllowShrink: true })
+		}
+		if (id === 'arm') {
+			const text = elements.find((element) => 'type' in element && element.type === 'text')
+			if (text)
+				Object.assign(text, {
+					text: '$(C4_Clock:arm_label)\n$(C4_Clock:arm_state)',
+					fontsize: 24,
+					fontsizeAllowShrink: true,
+				})
+		}
+		if (id === 'auto_load_ppt' || id === 'clear_message') {
+			const text = elements.find((element) => 'type' in element && element.type === 'text')
+			if (text)
+				Object.assign(text, {
+					text: id === 'auto_load_ppt' ? 'AUTO\nLOAD\nPPT' : 'CLEAR\nMESSAGE',
+					fontsize: id === 'clear_message' ? 20 : 24,
+					fontsizeAllowShrink: true,
+					x: 6,
+					y: 8,
+					width: 88,
+					height: 84,
+				})
+		}
+		if (id === 'current_presenter' || id === 'next_presenter') {
+			const name = elements.find((element) => 'type' in element && element.type === 'text')
+			if (name) {
+				Object.assign(name, {
+					text: `$(C4_Clock:${id}_display)`,
+					fontsize: 42,
+					fontsizeAllowShrink: true,
+					x: 8,
+					y: 38,
+					width: 84,
+					height: 50,
+				})
+				elements.push({
+					...structuredClone(name),
+					id: 'presenterHeader',
+					text: id === 'current_presenter' ? 'CURRENT' : 'NEXT',
+					fontsize: 48,
+					fontsizeAllowShrink: false,
+					x: 8,
+					y: 9,
+					width: 84,
+					height: 26,
+					color: GREEN,
+					outlineColor: GREEN,
+				})
+			}
+		}
+		if (id === 'five_minutes_minus' || id === 'five_minutes_plus') {
+			const text = elements.find((element) => 'type' in element && element.type === 'text')
+			if (text) text.text = id === 'five_minutes_minus' ? '−5\nMIN' : '+5\nMIN'
+		}
 		if (id === 'timer') {
 			const colour = { value: `$(${self.label || 'C4_Clock'}:timer_colour)`, isExpression: true as const }
 			const textColour = { value: `$(${self.label || 'C4_Clock'}:timer_text_colour)`, isExpression: true as const }
 			for (const element of elements) {
 				if ('type' in element && element.type === 'box') element.color = colour
+				if ('type' in element && element.type === 'image')
+					element.base64Image = `data:image/png;base64,${OUTPUT_ICONS.buttonBorderBlack}`
 				if ('type' in element && element.type === 'text') {
 					element.color = textColour
 					if (Object.hasOwn(element, 'outlineColor')) element.outlineColor = textColour
@@ -276,7 +475,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 			if (image) image.base64Image = `data:image/png;base64,${OUTPUT_ICONS.buttonBorder}`
 			if (text)
 				Object.assign(text, {
-					text: id === 'previous' ? 'PREV' : 'NEXT',
+					text: id === 'previous' ? 'LOAD\nPREV' : 'LOAD\nNEXT',
 					enabled: true,
 					x: 0,
 					y: 0,
@@ -320,8 +519,26 @@ export function UpdatePresets(self: ModuleInstance): void {
 		}
 	}
 
-	for (const preset of Object.values(presets)) {
+	const radios = [...(self.radios?.values() ?? [])]
+	radioGroup.presets = radios.length ? radios.map((radio) => `radio_${radio.id}`) : ['radio_setup']
+	if (radios.length) {
+		for (const radio of radios) presets[`radio_${radio.id}`] = radioPreset(radio, self.label || 'C4_Clock')
+	} else {
+		const examples = radioDemoPresets()
+		Object.assign(presets, examples)
+		radioGroup.name = 'Radio mic batteries and RF - DEMO examples (not live)'
+		radioGroup.presets = [...Object.keys(examples), 'radio_setup']
+		presets.radio_setup = {
+			type: 'simple',
+			name: 'Radio setup status - enable C4 Pro and configure Audio Setup',
+			style: { ...style('$(C4_Clock:radio_status)', '14'), bgcolor: 0x303438 },
+			steps: [],
+			feedbacks: [],
+		}
+	}
+	for (const [id, preset] of Object.entries(presets)) {
 		if (!preset) continue
+		if (id.startsWith('radio_demo_')) continue
 		if (preset.type === 'simple') {
 			preset.style.text = preset.style.text?.replaceAll('$(C4_Clock:', `$(${self.label || 'C4_Clock'}:`)
 			preset.feedbacks.push({
